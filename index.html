@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up · Yantra</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2338bdf8'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 16 L86 80 H14 Z' fill='none' stroke='url(%23g)' stroke-width='14' stroke-linejoin='round'/%3E%3Cpath d='M61 66 L50 47 L39 66 H55' fill='none' stroke='url(%23g)' stroke-width='7' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="auth-page">
+  <section class="brand" id="brand"></section>
+
+  <main class="form-wrap">
+    <div class="card">
+      <div class="demo-banner" id="demoBanner">
+        <span>⚠</span>
+        <span><strong>Demo mode:</strong> accounts are stored only in this browser. Add your Firebase keys to <code>firebase-config.js</code> for real accounts and Google/GitHub sign-in.</span>
+      </div>
+
+      <h2>Create your account</h2>
+      <p class="sub">Already have an account? <a href="login.html" id="loginLink">Log in</a></p>
+
+      <div class="notice" id="notice" role="alert"></div>
+
+      <div class="social" id="social"></div>
+      <div class="divider">or sign up with email</div>
+
+      <form id="signupForm" novalidate>
+        <div class="row">
+          <div class="field" data-field="firstName">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" autocomplete="given-name" placeholder="Arjun" />
+            <div class="err">Please enter your first name</div>
+          </div>
+          <div class="field" data-field="lastName">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" autocomplete="family-name" placeholder="Sharma" />
+            <div class="err">Please enter your last name</div>
+          </div>
+        </div>
+
+        <div class="field" data-field="email">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email" placeholder="you@example.com" />
+          <div class="err">Please enter a valid email address</div>
+        </div>
+
+        <div class="field" data-field="password">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" autocomplete="new-password" placeholder="At least 8 characters" />
+            <button type="button" class="toggle-pw" data-target="password" aria-label="Show password">Show</button>
+          </div>
+          <div class="strength"><span></span><span></span><span></span><span></span></div>
+          <div class="strength-label" id="strengthLabel">Use 8+ characters with letters, numbers &amp; symbols</div>
+          <div class="err">Password must be at least 8 characters</div>
+        </div>
+
+        <div class="field" data-field="confirm">
+          <label for="confirm">Confirm password</label>
+          <div class="input-wrap">
+            <input type="password" id="confirm" autocomplete="new-password" placeholder="Re-enter password" />
+            <button type="button" class="toggle-pw" data-target="confirm" aria-label="Show password">Show</button>
+          </div>
+          <div class="err">Passwords do not match</div>
+        </div>
+
+        <label class="terms" id="termsRow">
+          <input type="checkbox" id="terms" />
+          <span>I agree to Yantra's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+        </label>
+
+        <button type="submit" class="submit" id="submitBtn">Create account</button>
+      </form>
+
+      <p class="foot">Protected by industry-standard encryption</p>
+    </div>
+  </main>
+
+  <script>
+    if (location.protocol === "file:") {
+      document.addEventListener("DOMContentLoaded", () => {
+        const n = document.getElementById("notice");
+        n.textContent = 'This page has to be served to work. Run "node server.js" in the yantra-signup folder and open http://localhost:5500';
+        n.className = "notice show error";
+      });
+    }
+  </script>
+  <script type="module">
+    import { auth } from "./auth.js";
+    import { renderBrand } from "./brand.js";
+    import { $, emailRe, notice, clearNotice, setBusy, initPasswordToggles, markField,
+             showDemoBanner, nextPage, renderSocial, initSocial } from "./ui.js";
+
+    renderBrand($("brand"));
+
+    // Already signed in? Go straight to the app.
+    if (await auth.ready) location.replace(nextPage());
+
+    showDemoBanner(auth);
+    initPasswordToggles();
+    renderSocial($("social"));
+    initSocial(auth, { onSuccess: () => location.replace(nextPage()) });
+    if (location.search) $("loginLink").href = "login.html" + location.search;
+
+    // Password strength meter
+    const bars = document.querySelectorAll(".strength span");
+    const levels = [
+      { label: "Too weak", color: "#d93a3a" },
+      { label: "Weak", color: "#f08a24" },
+      { label: "Good", color: "#e6b800" },
+      { label: "Strong", color: "#1f9d61" },
+    ];
+    function scorePassword(pw) {
+      let s = 0;
+      if (pw.length >= 8) s++;
+      if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
+      if (/\d/.test(pw)) s++;
+      if (/[^A-Za-z0-9]/.test(pw)) s++;
+      return s;
+    }
+    $("password").addEventListener("input", e => {
+      const pw = e.target.value;
+      const s = scorePassword(pw);
+      bars.forEach((b, i) => b.style.background = pw && i < s ? levels[Math.max(s - 1, 0)].color : "");
+      $("strengthLabel").textContent = pw
+        ? `Strength: ${levels[Math.max(s - 1, 0)].label}`
+        : "Use 8+ characters with letters, numbers & symbols";
+    });
+
+    // Validation
+    const rules = {
+      firstName: v => v.trim().length > 0,
+      lastName: v => v.trim().length > 0,
+      email: v => emailRe.test(v.trim()),
+      password: v => v.length >= 8,
+      confirm: v => v.length > 0 && v === $("password").value,
+    };
+    const validateField = name => markField(name, rules[name]($(name).value));
+    Object.keys(rules).forEach(name => {
+      $(name).addEventListener("blur", () => { if ($(name).value) validateField(name); });
+      $(name).addEventListener("input", () => {
+        if ($(name).closest(".field").classList.contains("invalid")) validateField(name);
+      });
+    });
+
+    $("signupForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      clearNotice();
+      const results = Object.keys(rules).map(validateField);
+      const termsOk = $("terms").checked;
+      $("termsRow").classList.toggle("invalid", !termsOk);
+      if (results.includes(false) || !termsOk) {
+        const firstBad = document.querySelector(".field.invalid input");
+        if (firstBad) firstBad.focus();
+        return;
+      }
+
+      const email = $("email").value.trim();
+      const btn = $("submitBtn");
+      setBusy(btn, true, "Creating account…");
+      try {
+        await auth.signUpEmail({
+          name: `${$("firstName").value.trim()} ${$("lastName").value.trim()}`,
+          email,
+          password: $("password").value,
+        });
+        location.replace("dashboard.html?welcome=1");
+      } catch (err) {
+        notice(auth.describeError(err) || "Sign-up failed. Please try again.");
+        if (err.code === "auth/email-already-in-use") {
+          const a = document.createElement("a");
+          a.href = `login.html?email=${encodeURIComponent(email)}`;
+          a.textContent = " Log in →";
+          a.className = "link";
+          $("notice").appendChild(a);
+        }
+        setBusy(btn, false);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · Yantra</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2338bdf8'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 16 L86 80 H14 Z' fill='none' stroke='url(%23g)' stroke-width='14' stroke-linejoin='round'/%3E%3Cpath d='M61 66 L50 47 L39 66 H55' fill='none' stroke='url(%23g)' stroke-width='7' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      color: #e7e8f5;
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(79, 70, 229, .35) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(168, 85, 247, .25) 0%, transparent 50%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    .app { visibility: hidden; }
+    .app.ready { visibility: visible; }
+    .stars { position: fixed; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 2;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 32px; border-bottom: 1px solid rgba(167, 139, 250, .15);
+      background: rgba(7, 10, 31, .7); backdrop-filter: blur(10px);
+    }
+    .topbar .brand-head { gap: 10px; }
+    .topbar .brand-logo { width: 36px; height: 36px; }
+    .topbar .wordmark { font-size: 22px; }
+    .user-chip { display: flex; align-items: center; gap: 12px; }
+    .user-chip .name { font-size: 14px; font-weight: 600; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+      display: grid; place-items: center; color: #fff; font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan), var(--violet), var(--pink));
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar.lg { width: 72px; height: 72px; font-size: 28px; box-shadow: 0 0 24px rgba(167, 139, 250, .45); }
+    .btn {
+      padding: 9px 16px; border-radius: 10px; cursor: pointer;
+      font: 600 13px "Inter", sans-serif; color: #e7e8f5;
+      background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14);
+      transition: background .15s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, .12); }
+    .btn:disabled { opacity: .6; cursor: wait; }
+
+    main { position: relative; max-width: 1040px; margin: 0 auto; padding: 36px 32px 60px; }
+    .verify {
+      display: none; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      padding: 14px 18px; border-radius: 14px; margin-bottom: 24px;
+      background: rgba(250, 204, 21, .1); border: 1px solid rgba(250, 204, 21, .35); color: #fde68a; font-size: 14px;
+    }
+    .verify.show { display: flex; }
+    .verify .actions { display: flex; gap: 8px; }
+
+    .welcome {
+      display: flex; align-items: center; gap: 20px; padding: 28px;
+      border-radius: 18px; margin-bottom: 24px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, .22), rgba(236, 72, 153, .14));
+      border: 1px solid rgba(167, 139, 250, .3);
+    }
+    .welcome h1 { font-size: 28px; margin-bottom: 4px; }
+    .welcome p { color: #b9bbd8; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; }
+    .panel {
+      padding: 24px; border-radius: 16px;
+      background: rgba(255, 255, 255, .04); border: 1px solid rgba(255, 255, 255, .09);
+    }
+    .panel h2 { font-size: 16px; margin-bottom: 16px; }
+    dl { display: grid; grid-template-columns: auto 1fr; gap: 12px 16px; font-size: 14px; }
+    dt { color: #9a9dbd; }
+    dd { word-break: break-word; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .badge.ok { background: rgba(31, 157, 97, .2); color: #6ee7b7; }
+    .badge.warn { background: rgba(250, 204, 21, .15); color: #fde68a; }
+    .panel .features { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .panel .features li { padding: 14px; border-radius: 12px; background: rgba(255, 255, 255, .03); }
+    .mode { margin-top: 28px; text-align: center; color: #8d90b0; font-size: 12px; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px); opacity: 0;
+      padding: 10px 18px; border-radius: 10px; background: #1e2140; border: 1px solid rgba(167, 139, 250, .35);
+      font-size: 14px; transition: opacity .25s, transform .25s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 800px) {
+      .topbar { padding: 12px 16px; }
+      .user-chip .name { display: none; }
+      main { padding: 24px 16px 48px; }
+      .grid { grid-template-columns: 1fr; }
+      .welcome { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="app" id="app">
+    <header class="topbar">
+      <a class="brand-head" href="dashboard.html" id="logo"></a>
+      <div class="user-chip">
+        <span class="name" id="navName"></span>
+        <div class="avatar" id="navAvatar"></div>
+        <button class="btn" id="signOutBtn">Sign out</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="verify" id="verifyBar">
+        <span>📧 Please verify your email. We sent a link to <strong id="verifyEmail"></strong>.</span>
+        <div class="actions">
+          <button class="btn" id="resendBtn">Resend email</button>
+          <button class="btn" id="refreshBtn">I've verified</button>
+        </div>
+      </div>
+
+      <section class="welcome">
+        <div class="avatar lg" id="bigAvatar"></div>
+        <div>
+          <h1 id="greeting">Welcome to Yantra</h1>
+          <p id="subGreeting">Your workspace is ready. Start building.</p>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Your account</h2>
+          <dl>
+            <dt>Name</dt><dd id="dName">—</dd>
+            <dt>Email</dt><dd id="dEmail">—</dd>
+            <dt>Signed in with</dt><dd id="dProvider">—</dd>
+            <dt>Email status</dt><dd id="dVerified">—</dd>
+            <dt>Member since</dt><dd id="dCreated">—</dd>
+            <dt>Last sign-in</dt><dd id="dLast">—</dd>
+          </dl>
+        </section>
+        <section class="panel">
+          <h2>Get started</h2>
+          <ul class="features" id="features"></ul>
+        </section>
+      </div>
+
+      <p class="mode" id="modeNote"></p>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module">
+    import { auth } from "./auth.js";
+    import { injectDefs, LOGO_MARK, FEATURES, icon, addStars, respectReducedMotion } from "./brand.js";
+    import { $ } from "./ui.js";
+
+    // Route guard: only signed-in users may see this page.
+    let user = await auth.ready;
+    if (!user) {
+      location.replace("login.html?next=dashboard.html");
+      throw new Error("Not signed in");
+    }
+
+    injectDefs();
+    addStars($("stars"), 50);
+    $("logo").innerHTML = `${LOGO_MARK}<div class="wordmark">Yantra</div>`;
+    $("features").innerHTML = FEATURES
+      .map(([i, t, s]) => `<li><div class="icon">${icon(i)}</div><strong>${t}</strong><small>${s}</small></li>`)
+      .join("");
+    respectReducedMotion();
+
+    const PROVIDERS = { "google.com": "Google", "github.com": "GitHub", password: "Email & password" };
+    const fmtDate = d => d ? new Date(d).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "—";
+
+    function fillAvatar(el, u) {
+      el.innerHTML = "";
+      if (u.photoURL) {
+        const img = document.createElement("img");
+        img.src = u.photoURL;
+        img.alt = "";
+        img.referrerPolicy = "no-referrer";
+        el.appendChild(img);
+      } else {
+        el.textContent = (u.displayName || u.email || "Y").trim().charAt(0).toUpperCase();
+      }
+    }
+
+    function toast(msg) {
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => t.classList.remove("show"), 3000);
+    }
+
+    function render(u) {
+      const first = (u.displayName || "").split(" ")[0];
+      const isNew = new URLSearchParams(location.search).has("welcome");
+      $("navName").textContent = u.displayName || u.email;
+      fillAvatar($("navAvatar"), u);
+      fillAvatar($("bigAvatar"), u);
+      $("greeting").textContent = isNew
+        ? `Welcome to Yantra${first ? ", " + first : ""}! 🎉`
+        : `Welcome back${first ? ", " + first : ""}!`;
+      $("subGreeting").textContent = isNew
+        ? "Your account is ready. Let's turn your ideas into working machines."
+        : "Pick up right where you left off.";
+      $("dName").textContent = u.displayName || "—";
+      $("dEmail").textContent = u.email || "—";
+      $("dProvider").textContent = PROVIDERS[u.provider] || u.provider;
+      $("dVerified").innerHTML = u.emailVerified
+        ? '<span class="badge ok">Verified</span>'
+        : '<span class="badge warn">Not verified</span>';
+      $("dCreated").textContent = fmtDate(u.createdAt);
+      $("dLast").textContent = fmtDate(u.lastLoginAt);
+      $("verifyEmail").textContent = u.email;
+      $("verifyBar").classList.toggle("show", !u.emailVerified);
+      $("modeNote").textContent = auth.mode === "demo"
+        ? "Demo mode: this account exists only in this browser. Add Firebase keys for real accounts."
+        : "";
+    }
+
+    render(user);
+    $("app").classList.add("ready");
+
+    // Signed out elsewhere (another tab, token revoked) -> back to login.
+    auth.onChange(u => { if (!u) location.replace("login.html"); });
+
+    $("signOutBtn").addEventListener("click", async e => {
+      e.currentTarget.disabled = true;
+      await auth.signOut();
+      location.replace("login.html");
+    });
+
+    $("resendBtn").addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      try {
+        await auth.resendVerification();
+        toast("Verification email sent.");
+      } catch (err) {
+        toast(auth.describeError(err) || "Couldn't send the email.");
+      } finally {
+        setTimeout(() => (btn.disabled = false), 30_000);
+      }
+    });
+
+    $("refreshBtn").addEventListener("click", async () => {
+      user = await auth.refresh();
+      if (user) render(user);
+      toast(user?.emailVerified ? "Email verified. Thanks!" : "Not verified yet. Check your inbox.");
+    });
+  </script>
+</body>
+</html>
