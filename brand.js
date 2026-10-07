@@ -54,7 +54,7 @@ export const LOGO_MARK = `
 const sparkle = (x, y, s, delay) =>
   `<path class="sparkle" style="animation-delay:${delay}s" transform="translate(${x} ${y}) scale(${s})" d="M0,-8 l2,6 6,2 -6,2 -2,6 -2,-6 -6,-2 6,-2z"/>`;
 
-const HERO = `
+export const HERO = `
 <svg viewBox="0 40 400 230" role="img" aria-label="Animated Yantra logo">
   <g class="orbits" filter="url(#softGlow)">
     <g transform="rotate(-14 200 150)">
@@ -146,7 +146,7 @@ export function renderBrand(el, { headline = 'Build smarter.<br/><span>Engineer 
   injectDefs();
   el.innerHTML = `
     <div class="stars"></div>
-    <a class="brand-head" href="index.html">
+    <a class="brand-head" href="home.html">
       ${LOGO_MARK}
       <div>
         <div class="wordmark">Yantra</div>

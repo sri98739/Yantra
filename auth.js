@@ -194,6 +194,24 @@ function createDemoAuth() {
     write(sessionStorage, ATTEMPTS, a);
   }
 
+  // Mock accounts for testing, created on first load. Demo mode only.
+  const MOCK_USERS = [
+    { name: "Demo User", email: "demo@yantra.dev", password: "Demo@1234" },
+    { name: "Test Admin", email: "admin@yantra.dev", password: "Admin@1234" },
+  ];
+  const seeded = (async () => {
+    const all = users();
+    let changed = false;
+    for (const m of MOCK_USERS) {
+      if (all[m.email]) continue;
+      const salt = toHex(crypto.getRandomValues(new Uint8Array(16)));
+      const now = new Date().toUTCString();
+      all[m.email] = { uid: crypto.randomUUID(), name: m.name, email: m.email, salt, hash: await hash(m.password, salt), createdAt: now, lastLoginAt: now };
+      changed = true;
+    }
+    if (changed) saveUsers(all);
+  })();
+
   // Sign-out in another tab signs this tab out too.
   window.addEventListener("storage", e => {
     if (e.key === SESSION) { const u = current(); listeners.forEach(cb => cb(u)); }
@@ -205,6 +223,7 @@ function createDemoAuth() {
     ready: Promise.resolve(current()),
     onChange(cb) { listeners.add(cb); return () => listeners.delete(cb); },
     async signUpEmail({ name, email, password }) {
+      await seeded;
       email = email.trim().toLowerCase();
       const all = users();
       if (all[email]) throw authError("auth/email-already-in-use");
@@ -217,6 +236,7 @@ function createDemoAuth() {
     },
     async signInEmail({ email, password, remember = true }) {
       const attempts = checkLock();
+      await seeded;
       email = email.trim().toLowerCase();
       const all = users();
       const record = all[email];
