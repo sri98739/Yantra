@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yantra · Ideas, Tools, Impact</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2338bdf8'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 16 L86 80 H14 Z' fill='none' stroke='url(%23g)' stroke-width='14' stroke-linejoin='round'/%3E%3Cpath d='M61 66 L50 47 L39 66 H55' fill='none' stroke='url(%23g)' stroke-width='7' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      color: #e7e8f5;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(79, 70, 229, .4) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 60%, rgba(168, 85, 247, .22) 0%, transparent 45%),
+        radial-gradient(ellipse at 0% 100%, rgba(14, 165, 233, .15) 0%, transparent 45%),
+        var(--bg);
+    }
+    .stars { position: fixed; }
+    .wrap { position: relative; max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+
+    /* Nav */
+    .nav {
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(7, 10, 31, .72); backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(167, 139, 250, .12);
+    }
+    .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 20px; }
+    .nav .brand-logo { width: 36px; height: 36px; }
+    .nav .wordmark { font-size: 22px; }
+    .nav .brand-head { gap: 10px; }
+    .links { display: flex; gap: 28px; list-style: none; }
+    .links a { color: #b9bbd8; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .links a:hover { color: #fff; }
+    .actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 10px; text-decoration: none; cursor: pointer;
+      font: 600 14px "Inter", sans-serif; color: #e7e8f5; white-space: nowrap;
+      background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14);
+      transition: background .15s, transform .15s, box-shadow .15s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, .12); }
+    .btn.primary {
+      border: none; color: #fff;
+      background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+      box-shadow: 0 6px 24px rgba(168, 85, 247, .35);
+    }
+    .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(168, 85, 247, .5); }
+    .btn.lg { padding: 14px 26px; font-size: 15px; border-radius: 12px; }
+
+    /* Hero */
+    .hero-sec .wrap { display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; gap: 40px; padding-top: 72px; padding-bottom: 56px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+      font-size: 12.5px; font-weight: 600; color: #c4b5fd;
+      background: rgba(124, 92, 255, .12); border: 1px solid rgba(167, 139, 250, .35); margin-bottom: 20px;
+    }
+    .hero-sec h1 { font-size: 58px; line-height: 1.05; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; }
+    .hero-sec h1 span {
+      background: linear-gradient(90deg, #8b9bff, #c084fc 45%, #fb7185 75%, #fdba74);
+      background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: textShift 6s ease-in-out infinite;
+    }
+    .lede { color: #c9cbe3; font-size: 18px; line-height: 1.6; max-width: 520px; margin-bottom: 32px; }
+    .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-art { position: relative; display: grid; place-items: center; }
+    .hero-art svg { width: 100%; max-width: 540px; overflow: visible; }
+
+    /* Stats strip */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-bottom: 72px; }
+    .stat {
+      padding: 22px; border-radius: 16px; text-align: center;
+      background: rgba(255, 255, 255, .04); border: 1px solid rgba(255, 255, 255, .09);
+    }
+    .stat b { display: block; font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+    .stat span { color: #9a9dbd; font-size: 14px; }
+
+    /* Sections */
+    section.block { padding: 72px 0; }
+    .sec-head { text-align: center; max-width: 620px; margin: 0 auto 44px; }
+    .sec-head h2 { font-size: 38px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+    .sec-head p { color: #b9bbd8; font-size: 16px; line-height: 1.6; }
+
+    .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; list-style: none; }
+    .cards li {
+      padding: 26px; border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+      border: 1px solid rgba(255, 255, 255, .09); transition: transform .2s, border-color .2s;
+    }
+    .cards li:hover { transform: translateY(-4px); border-color: rgba(167, 139, 250, .45); }
+    .cards .icon {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 16px;
+      background: rgba(124, 92, 255, .14); border: 1px solid rgba(167, 139, 250, .45);
+      box-shadow: 0 0 14px rgba(124, 92, 255, .25);
+    }
+    .cards svg { width: 22px; height: 22px; stroke: #c4b5fd; }
+    .cards h3 { font-size: 17px; margin-bottom: 8px; }
+    .cards p { color: #a3a7c7; font-size: 14px; line-height: 1.6; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; list-style: none; }
+    .steps li { position: relative; padding: 28px 26px 26px; border-radius: 18px; background: rgba(255, 255, 255, .03); border: 1px dashed rgba(167, 139, 250, .3); }
+    .steps li::before {
+      counter-increment: step; content: counter(step);
+      display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; margin-bottom: 16px;
+      font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--cyan), var(--violet), var(--pink));
+    }
+    .steps h3 { font-size: 17px; margin-bottom: 8px; }
+    .steps p { color: #a3a7c7; font-size: 14px; line-height: 1.6; }
+
+    .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    blockquote { padding: 26px; border-radius: 18px; background: rgba(255, 255, 255, .04); border: 1px solid rgba(255, 255, 255, .09); }
+    blockquote p { color: #d6d8ee; line-height: 1.65; font-size: 15px; margin-bottom: 18px; }
+    blockquote footer { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    blockquote footer small { display: block; color: #9a9dbd; font-size: 12.5px; }
+    .initial {
+      width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff;
+      background: linear-gradient(135deg, var(--cyan), var(--violet), var(--pink));
+    }
+
+    .cta-box {
+      text-align: center; padding: 56px 32px; border-radius: 24px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, .28), rgba(236, 72, 153, .18));
+      border: 1px solid rgba(167, 139, 250, .35);
+    }
+    .cta-box h2 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+    .cta-box p { color: #c9cbe3; margin-bottom: 28px; font-size: 16px; }
+    .cta-box .cta-row { justify-content: center; }
+
+    footer.site { border-top: 1px solid rgba(255, 255, 255, .08); margin-top: 72px; }
+    footer.site .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 28px; padding-bottom: 28px; color: #8d90b0; font-size: 13px; flex-wrap: wrap; }
+    footer.site .brand-logo { width: 28px; height: 28px; }
+    footer.site .wordmark { font-size: 18px; }
+    footer.site .brand-head { gap: 8px; color: #e7e8f5; }
+
+    @media (max-width: 980px) {
+      .links { display: none; }
+      .hero-sec .wrap { grid-template-columns: 1fr; text-align: center; padding-top: 48px; }
+      .hero-sec .lede { margin-left: auto; margin-right: auto; }
+      .hero-sec .cta-row { justify-content: center; }
+      .hero-art { order: -1; }
+      .hero-art svg { max-width: 420px; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .steps, .quotes { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding: 0 16px; }
+      .hero-sec h1 { font-size: 40px; }
+      .sec-head h2, .cta-box h2 { font-size: 28px; }
+      .cards { grid-template-columns: 1fr; }
+      .nav .wordmark { display: none; }
+      .actions .btn { padding: 9px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand-head" href="home.html" id="logo"></a>
+      <ul class="links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#community">Community</a></li>
+      </ul>
+      <div class="actions" id="navActions">
+        <a class="btn" href="login.html">Log in</a>
+        <a class="btn primary" href="index.html">Sign up</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-sec">
+      <div class="wrap">
+        <div>
+          <div class="eyebrow">✦ Ideas · Tools · Impact</div>
+          <h1>Build smarter.<br /><span>Engineer the future.</span></h1>
+          <p class="lede">Yantra is where makers turn ideas into working machines. Plan projects, use modern tools and learn alongside a community that builds things.</p>
+          <div class="cta-row" id="heroCtas">
+            <a class="btn primary lg" href="index.html">Get started free →</a>
+            <a class="btn lg" href="#features">Explore features</a>
+          </div>
+        </div>
+        <div class="hero-art" id="heroArt"></div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="stats">
+        <div class="stat"><b>12k+</b><span>Makers</span></div>
+        <div class="stat"><b>3,400</b><span>Projects built</span></div>
+        <div class="stat"><b>180+</b><span>Tools &amp; kits</span></div>
+        <div class="stat"><b>45</b><span>Cities</span></div>
+      </div>
+    </div>
+
+    <section class="block" id="features">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Everything you need to build</h2>
+          <p>From the first sketch to a working prototype, Yantra keeps your projects, tools and people in one place.</p>
+        </div>
+        <ul class="cards" id="featureCards"></ul>
+      </div>
+    </section>
+
+    <section class="block" id="how">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>How it works</h2>
+          <p>Three steps from idea to impact.</p>
+        </div>
+        <ol class="steps">
+          <li><h3>Create your account</h3><p>Sign up in seconds with email, Google or GitHub and get your own workspace.</p></li>
+          <li><h3>Start a project</h3><p>Set goals, track progress and pick the tools and kits your build needs.</p></li>
+          <li><h3>Build &amp; share</h3><p>Join workshops, get feedback from the community and show off what you made.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="block" id="community">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Loved by makers</h2>
+          <p>Students, hobbyists and engineers build with Yantra every day.</p>
+        </div>
+        <div class="quotes">
+          <blockquote>
+            <p>“I went from a napkin sketch to a working line-following robot in three weekends. The project tracker kept me honest.”</p>
+            <footer><span class="initial">A</span><div>Ananya R.<small>Robotics student</small></div></footer>
+          </blockquote>
+          <blockquote>
+            <p>“The community workshops are the best part. Someone always knows the answer to the weird problem you're stuck on.”</p>
+            <footer><span class="initial">K</span><div>Karthik M.<small>Hardware hobbyist</small></div></footer>
+          </blockquote>
+          <blockquote>
+            <p>“Our college club runs all of its builds on Yantra now. Everyone can see what's happening at a glance.”</p>
+            <footer><span class="initial">P</span><div>Priya S.<small>Club lead</small></div></footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="wrap">
+        <div class="cta-box" id="ctaBox">
+          <h2>Ready to build something?</h2>
+          <p>Create your free Yantra account and start your first project today.</p>
+          <div class="cta-row">
+            <a class="btn primary lg" href="index.html">Create free account</a>
+            <a class="btn lg" href="login.html">I already have an account</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <a class="brand-head" href="home.html" id="footLogo"></a>
+      <span>© <span id="year"></span> Yantra. Ideas ✦ Tools ✦ Impact.</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { auth } from "./auth.js";
+    import { injectDefs, LOGO_MARK, HERO, FEATURES, icon, addStars, respectReducedMotion } from "./brand.js";
+    import { $ } from "./ui.js";
+
+    const DESCRIPTIONS = {
+      "Build Projects": "Plan builds, set milestones and track progress from idea to working prototype.",
+      "Join Community": "Meet makers, join workshops and get feedback on what you're building.",
+      "Access Tools": "Browse kits, components and software tools picked for real projects.",
+      "Create Impact": "Ship projects that solve real problems and share them with the world.",
+    };
+
+    injectDefs();
+    addStars($("stars"), 70);
+    $("logo").innerHTML = `${LOGO_MARK}<div class="wordmark">Yantra</div>`;
+    $("footLogo").innerHTML = `${LOGO_MARK}<div class="wordmark">Yantra</div>`;
+    $("heroArt").innerHTML = HERO;
+    $("featureCards").innerHTML = FEATURES
+      .map(([i, t]) => `<li><div class="icon">${icon(i)}</div><h3>${t}</h3><p>${DESCRIPTIONS[t] || ""}</p></li>`)
+      .join("");
+    $("year").textContent = new Date().getFullYear();
+    respectReducedMotion();
+
+    // Signed in? Swap the sign-up calls to action for a link to the dashboard.
+    const user = await auth.ready;
+    if (user) {
+      const first = (user.displayName || "").split(" ")[0];
+      $("navActions").innerHTML = `<a class="btn primary" href="dashboard.html">Go to dashboard →</a>`;
+      $("heroCtas").innerHTML = `
+        <a class="btn primary lg" href="dashboard.html">Open your dashboard →</a>
+        <a class="btn lg" href="#features">Explore features</a>`;
+      $("ctaBox").innerHTML = `
+        <h2>Welcome back${first ? ", " + first.replace(/[<>&"]/g, "") : ""}!</h2>
+        <p>Your projects are waiting for you.</p>
+        <div class="cta-row"><a class="btn primary lg" href="dashboard.html">Go to dashboard</a></div>`;
+    }
+  </script>
+</body>
+</html>
