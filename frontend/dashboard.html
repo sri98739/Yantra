@@ -200,7 +200,41 @@
     }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+    /* DevOps */
+    .devops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .tool { display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 14px; background: rgba(255, 255, 255, .03); border: 1px solid var(--line); min-width: 0; }
+    .tool-head { display: flex; align-items: center; gap: 12px; }
+    .tool-logo { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; }
+    .tool-logo svg { width: 24px; height: 24px; stroke: #fff; }
+    .tool-logo.jenkins { background: #c0392b; }
+    .tool-logo.docker { background: #1d63ed; }
+    .tool-logo.k8s { background: #326ce5; }
+    .tool-head h4 { font-size: 15px; }
+    .tool-head small { color: var(--ink-3); font-size: 12px; }
+    .tool-head .badge { margin-left: auto; }
+    .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 13px; }
+    .kv dt { color: var(--ink-3); }
+    .kv dd { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+    .stages { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+    .stages li { display: flex; align-items: center; gap: 8px; color: var(--ink-2); }
+    .stages .s { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, .2); }
+    .stages .done .s { background: rgba(31, 157, 97, .25); border-color: #6ee7b7; color: #6ee7b7; }
+    .stages .run .s { border-color: #fde68a; border-top-color: transparent; animation: spin .8s linear infinite; }
+    .stages .done, .stages .run { color: var(--ink); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pods { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pod { display: flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 8px; font: 12px ui-monospace, Consolas, monospace; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); }
+    .pod i { width: 8px; height: 8px; border-radius: 50%; background: #6ee7b7; }
+    .pod.starting i { background: #fde68a; }
+    .tool-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+    .cmd { position: relative; }
+    .cmd pre { padding: 10px 12px; padding-right: 56px; border-radius: 10px; white-space: pre-wrap; word-break: break-word; font: 12px/1.6 ui-monospace, Consolas, monospace; color: #c4b5fd; background: rgba(0, 0, 0, .3); border: 1px solid var(--line); }
+    .cmd .copy { position: absolute; top: 6px; right: 6px; }
+    .badge.err { background: rgba(217, 58, 58, .2); color: #fca5a5; }
+    .panel-note { color: var(--ink-3); font-size: 12px; margin-top: 14px; }
+
     @media (max-width: 1100px) {
+      .devops { grid-template-columns: 1fr; }
       .tiles { grid-template-columns: repeat(2, 1fr); }
       .grid { grid-template-columns: 1fr; }
     }
@@ -233,6 +267,7 @@
         <a href="#projects" data-icon="bolt">Projects</a>
         <a href="#activity" data-icon="pulse">Activity</a>
         <a href="#events" data-icon="calendar">Events</a>
+        <a href="#devops" data-icon="server">DevOps</a>
         <a href="#account" data-icon="user">Account</a>
       </nav>
       <div class="grow"></div>
@@ -320,6 +355,68 @@
           </section>
         </div>
 
+        <section class="panel" id="devops" style="margin-bottom:24px">
+          <div class="panel-head">
+            <h3>DevOps: Jenkins · Docker · Kubernetes</h3>
+            <span class="hint">Pipeline for this Yantra app</span>
+          </div>
+          <div class="devops">
+            <article class="tool">
+              <div class="tool-head">
+                <div class="tool-logo jenkins" data-icon="jenkins"></div>
+                <div><h4>Jenkins</h4><small>CI/CD pipeline · Jenkinsfile</small></div>
+                <span class="badge ok" id="jStatus">Success</span>
+              </div>
+              <dl class="kv">
+                <dt>Last build</dt><dd id="jBuild">#1</dd>
+                <dt>Finished</dt><dd id="jWhen">—</dd>
+              </dl>
+              <ul class="stages" id="jStages"></ul>
+              <div class="tool-actions">
+                <button class="btn sm primary" id="runPipeline">▶ Run pipeline</button>
+              </div>
+            </article>
+
+            <article class="tool">
+              <div class="tool-head">
+                <div class="tool-logo docker" data-icon="docker"></div>
+                <div><h4>Docker</h4><small>Container image · Dockerfile</small></div>
+                <span class="badge" id="dHealth">Checking…</span>
+              </div>
+              <dl class="kv">
+                <dt>Image</dt><dd id="dImage">yantra-web:1</dd>
+                <dt>Base</dt><dd>node:22-alpine</dd>
+                <dt>Port</dt><dd>5500</dd>
+                <dt>User</dt><dd>node (non-root)</dd>
+                <dt>Health</dt><dd>/healthz</dd>
+              </dl>
+              <div class="cmd"><pre>docker build -t yantra-web .
+docker run -p 5500:5500 yantra-web</pre><button class="btn sm copy">Copy</button></div>
+            </article>
+
+            <article class="tool">
+              <div class="tool-head">
+                <div class="tool-logo k8s" data-icon="k8s"></div>
+                <div><h4>Kubernetes</h4><small>Deployment · k8s/</small></div>
+                <span class="badge ok" id="kStatus">Running</span>
+              </div>
+              <dl class="kv">
+                <dt>Namespace</dt><dd>yantra</dd>
+                <dt>Deployment</dt><dd>yantra-web</dd>
+                <dt>Replicas</dt><dd id="kReplicas">2/2 ready</dd>
+                <dt>Service</dt><dd>NodePort :30080</dd>
+              </dl>
+              <div class="pods" id="kPods"></div>
+              <div class="tool-actions">
+                <button class="btn sm" id="scaleDown" aria-label="Remove a replica">− Scale</button>
+                <button class="btn sm" id="scaleUp" aria-label="Add a replica">+ Scale</button>
+              </div>
+              <div class="cmd"><pre>kubectl apply -f k8s/</pre><button class="btn sm copy">Copy</button></div>
+            </article>
+          </div>
+          <p class="panel-note">Docker health is checked live against this server's /healthz. Jenkins builds and Kubernetes pods are simulated here until a real Jenkins server and cluster are connected.</p>
+        </section>
+
         <section class="panel" id="account">
           <div class="panel-head"><h3>Your account</h3></div>
           <dl>
@@ -366,6 +463,14 @@
 
     // Route guard: only signed-in users may see this page.
     let user = await auth.ready;
+    if (!user && auth.mode === "demo") {
+      try {
+        await auth.signInEmail({ email: "demo@yantra.dev", password: "Demo@1234", remember: true });
+        user = await auth.refresh();
+      } catch (err) {
+        console.warn("Auto-signing in demo user failed", err);
+      }
+    }
     if (!user) {
       location.replace("login.html?next=dashboard.html");
       throw new Error("Not signed in");
@@ -382,6 +487,10 @@
       clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
       star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
       flame: '<path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-12-3 2-5 5-5 8-1-1-2-2-2-4-1.5 2-2 4-2 6 0 5 3 9 7 9z"/>',
+      server: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+      jenkins: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M6 8.5v7M8.3 7l7.4 4M8.3 17l7.4-4"/>',
+      docker: '<rect x="3" y="10" width="4" height="4"/><rect x="7" y="10" width="4" height="4"/><rect x="11" y="10" width="4" height="4"/><rect x="7" y="6" width="4" height="4"/><rect x="11" y="6" width="4" height="4"/><path d="M2 14h17c1.5 0 2.5-1.5 3-3-1-.5-2-.3-2.5.2"/><path d="M3 14c.5 4 4 6 8 6 5 0 8-3 8.5-6"/>',
+      k8s: '<path d="M12 2.5 20.5 6.6l2.1 9.2-5.9 7.4H7.3l-5.9-7.4 2.1-9.2z"/><circle cx="12" cy="12.5" r="3"/><path d="M12 6v3.5M12 15.5V19M6.2 9.5l3 1.6M14.8 13.9l3 1.6M6.2 15.5l3-1.6M14.8 11.1l3-1.6"/>',
       chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
       check: '<path d="m5 12 5 5 9-10"/>',
     };
@@ -633,6 +742,90 @@
       toast(rsvps.includes(id) ? "You're on the list!" : "RSVP cancelled.");
     });
 
+    // ---------- DevOps: Jenkins / Docker / Kubernetes ----------
+    const STAGES = ["Checkout", "Build image", "Smoke test", "Push image", "Deploy to Kubernetes"];
+    let pipeline = store.get("pipeline", { build: 12, finished: Date.now() - 3 * 36e5, status: "ok" });
+    let replicas = store.get("replicas", 2);
+    let running = false;
+
+    const podName = i => `yantra-web-7f9c${(pipeline.build * 7 + i * 13).toString(36).padStart(2, "0")}`;
+    function renderPipeline(activeStage = -1) {
+      $("jBuild").textContent = `#${pipeline.build}`;
+      $("jWhen").textContent = running ? "running…" : ago(pipeline.finished).replace("today", "today, " + new Date(pipeline.finished).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+      $("jStatus").className = `badge ${running ? "warn" : "ok"}`;
+      $("jStatus").textContent = running ? "Running" : "Success";
+      $("jStages").innerHTML = STAGES.map((s, i) => {
+        const cls = running ? (i < activeStage ? "done" : i === activeStage ? "run" : "") : "done";
+        return `<li class="${cls}"><span class="s">${cls === "done" ? "✓" : ""}</span>${s}</li>`;
+      }).join("");
+      $("dImage").textContent = `yantra-web:${running ? pipeline.build - 1 : pipeline.build}`;
+    }
+    function renderPods(startingFrom = Infinity) {
+      $("kReplicas").textContent = `${Math.min(replicas, startingFrom)}/${replicas} ready`;
+      $("kPods").innerHTML = [...Array(replicas)].map((_, i) =>
+        `<span class="pod ${i >= startingFrom ? "starting" : ""}" title="${i >= startingFrom ? "ContainerCreating" : "Running"}"><i></i>${podName(i)}</span>`).join("");
+      $("kStatus").className = `badge ${startingFrom < replicas ? "warn" : "ok"}`;
+      $("kStatus").textContent = startingFrom < replicas ? "Rolling out" : "Running";
+    }
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+
+    $("runPipeline").addEventListener("click", async e => {
+      if (running) return;
+      const btn = e.currentTarget;
+      running = true;
+      btn.disabled = true;
+      pipeline.build += 1;
+      for (let i = 0; i < STAGES.length; i++) {
+        renderPipeline(i);
+        if (i === STAGES.length - 1) renderPods(0);
+        await wait(900);
+      }
+      running = false;
+      pipeline.finished = Date.now();
+      store.set("pipeline", pipeline);
+      renderPipeline();
+      renderPods();
+      btn.disabled = false;
+      toast(`Build #${pipeline.build} deployed: yantra-web:${pipeline.build}`);
+    });
+
+    async function scale(delta) {
+      const next = Math.min(6, Math.max(1, replicas + delta));
+      if (next === replicas) return toast(delta > 0 ? "Max 6 replicas in this demo." : "Keep at least 1 replica.");
+      const before = replicas;
+      replicas = next;
+      store.set("replicas", replicas);
+      renderPods(delta > 0 ? before : Infinity);
+      if (delta > 0) { await wait(1200); renderPods(); }
+      toast(`Scaled yantra-web to ${replicas} replica${replicas > 1 ? "s" : ""}.`);
+    }
+    $("scaleUp").addEventListener("click", () => scale(1));
+    $("scaleDown").addEventListener("click", () => scale(-1));
+
+    // Real check against this server's health endpoint.
+    async function checkHealth() {
+      const el = $("dHealth");
+      try {
+        const res = await fetch("/healthz", { cache: "no-store" });
+        const ok = res.ok && (await res.text()).trim() === "ok";
+        el.className = `badge ${ok ? "ok" : "err"}`;
+        el.textContent = ok ? "Healthy" : "Unhealthy";
+      } catch {
+        el.className = "badge err";
+        el.textContent = "Unreachable";
+      }
+    }
+    setInterval(checkHealth, 15000);
+
+    document.querySelectorAll(".cmd .copy").forEach(btn => btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(btn.previousElementSibling.textContent);
+        toast("Command copied.");
+      } catch {
+        toast("Couldn't copy. Select the text instead.");
+      }
+    }));
+
     // ---------- Stats ----------
     const basePoints = 120 + Math.floor(rand() * 400);
     const streak = 1 + Math.floor(rand() * 12);
@@ -662,6 +855,9 @@
     renderFeed();
     renderEvents();
     renderStats();
+    renderPipeline();
+    renderPods();
+    checkHealth();
     $("app").classList.add("ready");
 
     // Signed out elsewhere (another tab, token revoked) -> back to login.

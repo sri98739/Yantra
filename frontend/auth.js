@@ -198,6 +198,7 @@ function createDemoAuth() {
   const MOCK_USERS = [
     { name: "Demo User", email: "demo@yantra.dev", password: "Demo@1234" },
     { name: "Test Admin", email: "admin@yantra.dev", password: "Admin@1234" },
+    { name: "QA Tester", email: "tester@yantra.dev", password: "Tester@1234" },
   ];
   const seeded = (async () => {
     const all = users();
