@@ -15,7 +15,15 @@
     <div class="card">
       <div class="demo-banner" id="demoBanner">
         <span>⚠</span>
-        <span><strong>Demo mode:</strong> accounts are stored only in this browser. Add your Firebase keys to <code>firebase-config.js</code> for real accounts and Google/GitHub sign-in.</span>
+        <div style="flex:1;">
+          <div><strong>Demo mode:</strong> mock accounts are pre-configured in local storage.</div>
+          <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:12px;">Quick fill:</span>
+            <button type="button" class="demo-chip" data-user="demo@yantra.dev" data-pass="Demo@1234">Demo User</button>
+            <button type="button" class="demo-chip" data-user="admin@yantra.dev" data-pass="Admin@1234">Test Admin</button>
+            <button type="button" class="demo-chip" data-user="tester@yantra.dev" data-pass="Tester@1234">QA Tester</button>
+          </div>
+        </div>
       </div>
       <div class="notice" id="notice" role="alert"></div>
 
@@ -78,7 +86,7 @@
     if (location.protocol === "file:") {
       document.addEventListener("DOMContentLoaded", () => {
         const n = document.getElementById("notice");
-        n.textContent = 'This page has to be served to work. Run "node server.js" in the yantra-signup folder and open http://localhost:5500/login.html';
+        n.textContent = 'This page has to be served to work. Run "npm start" or "node backend/server.js" in the yantra-signup folder and open http://localhost:5500/login.html';
         n.className = "notice show error";
       });
     }
@@ -109,6 +117,15 @@
     // Prefill email when coming from sign-up ("already registered").
     const prefill = new URLSearchParams(location.search).get("email");
     if (prefill) { $("email").value = prefill; $("password").focus(); }
+
+    document.querySelectorAll(".demo-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        $("email").value = chip.dataset.user;
+        $("password").value = chip.dataset.pass;
+        validEmail();
+        validPassword();
+      });
+    });
 
     // ---- Log in ----
     const validEmail = () => markField("email", emailRe.test($("email").value.trim()));
@@ -145,6 +162,22 @@
         setBusy(btn, false);
       }
     });
+
+    // Auto-login helper if ?autologin parameter is passed
+    const autoParam = new URLSearchParams(location.search).get("autologin");
+    if (autoParam && auth.mode === "demo") {
+      const mockCreds = {
+        demo: { email: "demo@yantra.dev", password: "Demo@1234" },
+        admin: { email: "admin@yantra.dev", password: "Admin@1234" },
+        tester: { email: "tester@yantra.dev", password: "Tester@1234" },
+      };
+      const cred = mockCreds[autoParam] || mockCreds.demo;
+      $("email").value = cred.email;
+      $("password").value = cred.password;
+      validEmail();
+      validPassword();
+      setTimeout(() => $("loginBtn").click(), 250);
+    }
 
     // ---- Forgot password ----
     function showReset(show) {

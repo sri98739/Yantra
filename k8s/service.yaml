@@ -1,0 +1,19 @@
+# NodePort so it works on local clusters (Docker Desktop, minikube) without an ingress:
+#   Docker Desktop -> http://localhost:30080
+#   minikube       -> minikube service yantra-web -n yantra
+apiVersion: v1
+kind: Service
+metadata:
+  name: yantra-web
+  namespace: yantra
+  labels:
+    app: yantra-web
+spec:
+  type: NodePort
+  selector:
+    app: yantra-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30080

@@ -1,0 +1,10 @@
+.git
+.gitignore
+.dockerignore
+.playwright-mcp
+Dockerfile
+Jenkinsfile
+k8s
+README.md
+node_modules
+*.log

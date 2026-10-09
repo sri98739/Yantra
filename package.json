@@ -1,0 +1,20 @@
+{
+  "name": "yantra",
+  "version": "1.0.0",
+  "description": "Yantra web application with separated frontend and backend",
+  "scripts": {
+    "start": "node backend/server.js",
+    "backend": "node backend/server.js",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "build:docker": "docker build -t yantra-web:latest .",
+    "test": "node test/run-tests.js",
+    "test:syntax": "node --check backend/server.js && node --check frontend/auth.js && node --check frontend/brand.js && node --check frontend/ui.js && node --check frontend/firebase-config.js"
+  },
+  "keywords": [
+    "yantra",
+    "auth",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "ISC"
+}

@@ -122,6 +122,21 @@ body.auth-page { display: grid; grid-template-columns: 1.05fr 1fr; }
   padding: 9px 12px; margin-bottom: 18px;
 }
 .demo-banner.show { display: flex; }
+.demo-chip {
+  background: #fdf0cd;
+  border: 1px solid #d8b760;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #634300;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.demo-chip:hover {
+  background: #f5df9a;
+  border-color: #bfa14e;
+}
 
 .notice {
   display: none; font-size: 13px; line-height: 1.5; padding: 10px 12px;

@@ -13,7 +13,7 @@
 //         GitHub Client ID and Client Secret back into Firebase.
 //  4. Authentication -> Settings -> Authorized domains: "localhost" is listed by
 //     default. Add your real domain here when you deploy.
-//  5. Run the page through the local server (node server.js), not by double-clicking
+//  5. Run the page through the local server (npm start or node backend/server.js), not by double-clicking
 //     the file. Sign-in popups don't work on file:// pages.
 
 export const firebaseConfig = {

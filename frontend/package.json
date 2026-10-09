@@ -1,0 +1,16 @@
+{
+  "name": "yantra-frontend",
+  "version": "1.0.0",
+  "description": "Frontend static web pages and assets for Yantra",
+  "scripts": {
+    "start": "node ../backend/server.js",
+    "build": "node --check auth.js && node --check brand.js && node --check ui.js && node --check firebase-config.js",
+    "test": "node --check auth.js && node --check brand.js && node --check ui.js && node --check firebase-config.js"
+  },
+  "keywords": [
+    "yantra",
+    "frontend"
+  ],
+  "author": "",
+  "license": "ISC"
+}
